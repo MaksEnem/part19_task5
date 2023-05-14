@@ -4,7 +4,7 @@
 
 void initialising_game_sector_number(bool is_game_sector_number[]) {
 
-	for (int i = 0; i < 5; ++i) {
+	for (int i = 0; i < 13; ++i) {
 
 		is_game_sector_number[i] = false;
 
@@ -13,13 +13,28 @@ void initialising_game_sector_number(bool is_game_sector_number[]) {
 
 void offset_of_the_current_sector_on_the_reel(int& offset, bool is_game_sector_number[]) {
 
+	int correct;
+
 	std::cout << "Please, enter offset: ";
-	std::cin >> offset;
-	
+	std::cin >> correct;	
 
-	if (offset > 5) {
+	if (correct > 13) {
 
-		offset = offset % 5;
+		correct = correct % 13;
+
+	}
+
+	offset += correct;
+
+	if (offset > 13) {
+
+		offset = offset % 13;
+
+	}
+
+	if (offset == 0) {
+
+		++offset;
 
 	}
 
@@ -35,7 +50,7 @@ void offset_of_the_current_sector_on_the_reel(int& offset, bool is_game_sector_n
 
 }
 
-void win(bool is_game_sector_number[], int& offset, std::ifstream& f_question, std::ifstream& f_answer) {
+void game_progress(bool is_game_sector_number[], int& offset, std::ifstream& f_question, std::ifstream& f_answer) {
 
 	int point_connoisseurs = 0;
 	int point_viewers = 0;
@@ -45,10 +60,9 @@ void win(bool is_game_sector_number[], int& offset, std::ifstream& f_question, s
 	std::string buffer_question;
 	std::string buffer_answers;
 
-	while ((point_connoisseurs != 2) || (point_viewers != 2)) {
+	while ((point_connoisseurs != 6) || (point_viewers != 6)) {
 
-		offset_of_the_current_sector_on_the_reel(offset, is_game_sector_number);
-
+		offset_of_the_current_sector_on_the_reel(offset, is_game_sector_number);			
 
 		for (int i = 0; i < offset; ++i) {
 
@@ -57,22 +71,12 @@ void win(bool is_game_sector_number[], int& offset, std::ifstream& f_question, s
 
 		}
 
-
-
-
 		std::cout << "Attention question: " << buffer_question << std::endl;
-		std::cout << "answers: " << buffer_answers << std::endl;
-
-
-
-
-
 
 		std::cout << "Connoisseurs, please enter the answer: ";
 		std::cin >> the_answer_of_connoisseurs;
 
 		if (buffer_answers == the_answer_of_connoisseurs) {
-
 
 			std::cout << "You answered correctly!" << std::endl;
 			std::cout << "Expert team wins 1 point" << std::endl;
@@ -81,7 +85,6 @@ void win(bool is_game_sector_number[], int& offset, std::ifstream& f_question, s
 
 		}
 		else {
-
 
 			std::cout << "You answered incorrectly!\n";
 			std::cout << "Correct answer: " << buffer_answers << std::endl;
@@ -108,22 +111,27 @@ void win(bool is_game_sector_number[], int& offset, std::ifstream& f_question, s
 
 		}
 
+		if (point_connoisseurs == 6) {
 
+			std::cout << "The expert team won with a score of: " << point_connoisseurs << ":" << point_viewers << std::endl;
+			break;
+		}
+		else if (point_viewers == 6) {
+
+			std::cout << "The viewer team won with a score of: " << point_connoisseurs << ":" << point_viewers << std::endl;
+			break;
+		}
 
 	}
-
 }
 
 int main() {
 
-	bool is_game_sector_number[5];
-	int offset;
-	
+	bool is_game_sector_number[13];
+	int offset = 1;	
 
 	std::ifstream f_question;
 	std::ifstream f_answer;
-
-
 
 	initialising_game_sector_number(is_game_sector_number);	
 
@@ -157,23 +165,9 @@ int main() {
 		std::cout << "ERROR!!!\n";
 		std::cout << "File is not open\n";
 
-	}
+	}	
 
-	
-
-	win( is_game_sector_number, offset, f_question, f_answer);
-
-
-
-
-	for (int i = 0; i < 5; ++i) {
-
-		std::cout << is_game_sector_number[i] << " ";
-
-	}
-	
-
-
+	game_progress( is_game_sector_number, offset, f_question, f_answer);
 
 	f_question.close();
 	f_answer.close();
